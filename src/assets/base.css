@@ -47,15 +47,135 @@
 }
 @font-face {
   font-family: "SourceHanSans";
-  src: url("MiConv.com__SourceHanSans-Normal.woff2");
+  src: url("SourceHanSans-Normal.ttf");
 }
 body {
+  overflow-x: hidden;
   font-family: "SourceHanSans";
-  min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
   transition: color 0.5s, background-color 0.5s;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.resImg {
+  width: 100%;
+  height: 100%;
+}
+.f10 {
+  font-size: 10px;
+}
+.f12 {
+  font-size: 12px;
+}
+.f14 {
+  font-size: 14px;
+}
+.f16 {
+  font-size: 16px;
+}
+.f18 {
+  font-size: 18px;
+}
+.f20 {
+  font-size: 20px;
+}
+.f22 {
+  font-size: 22px;
+}
+.f24 {
+  font-size: 24px;
+}
+.f26 {
+  font-size: 26px;
+}
+.f28 {
+  font-size: 28px;
+}
+.f30 {
+  font-size: 30px;
+}
+.f32 {
+  font-size: 32px;
+}
+.m5 {
+  margin-top: 5px;
+}
+.m10 {
+  margin-top: 10px;
+}
+.m15 {
+  margin-top: 15px;
+}
+.m20 {
+  margin-top: 20px;
+}
+.m30 {
+  margin-top: 30px;
+}
+.m40 {
+  margin-top: 40px;
+}
+.m50 {
+  margin-top: 50px;
+}
+.ml5 {
+  margin-left: 5px;
+}
+.ml10 {
+  margin-left: 10px;
+}
+.ml15 {
+  margin-left: 15px;
+}
+.ml20 {
+  margin-left: 20px;
+}
+.ml30 {
+  margin-left: 30px;
+}
+.bold {
+  font-weight: bold;
+}
+.w100 {
+  width: 100%;
+}
+.pointer {
+  cursor: pointer;
+}
+.hidden {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+.hidden2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hidden3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.center {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+.vcenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.pos {
+  position: relative;
 }

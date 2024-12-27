@@ -45,6 +45,7 @@ export default defineConfig({
   optimizeDeps: {
     include: ['vue', 'vue-router', 'pinia', 'axios']
   },
+  base: "./",
   build: {
     sourcemap: true
   },
@@ -79,7 +80,7 @@ export default defineConfig({
     postcss: {
       plugins: [
         postCssPxToRem({
-          rootValue: 144, //pc端建议：192，移动端建议：75；设计稿宽度的1 / 10
+          rootValue: 144, //pc端建议：192，移动端建议：75；
           propList: ['*', '!border'], // 除 border 外所有px 转 rem // 需要转换的属性，这里选择全部都进行转换
           selectorBlackList: ['norem'], // 过滤掉norem-开头的class，不进行rem转换，这个内容可以不写
           unitPrecision: 5, // 转换后的精度，即小数点位数

@@ -9,11 +9,29 @@ const Axios = () => import('@/pages/demos/axios/index.vue')
 const Element = () => import('@/pages/demos/element/index.vue')
 
 const routes: RouteRecordRaw[] = [
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFind },
+  // { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFind },
+  { path: '/:pathMatch(.*)*', redirect: '/' },
   {
     path: '/',
     name: 'home',
+    meta:{
+      keepAlive:true
+    },
     component: () => import('../../pages/home.vue')
+  },
+  {
+    path: '/main',
+    name: 'main',
+    meta:{
+      keepAlive:true
+    },
+    component: () => import('../../pages/main.vue'),
+    children: [
+      { path: 'element', component: Element, name: 'element' },
+      { path: 'axios', component: Axios, name: 'axios' },
+      { path: 'vueuse', component: VueUse, name: 'vueuse' },
+      
+    ]
   },
   {
     path: '/about',
