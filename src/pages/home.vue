@@ -48,11 +48,85 @@
                 <div class="stitle">
                     上传您想要普及的专业内容，我们将帮助您转化为通俗易懂的科普文章
                 </div>
-                <div class="upload"></div>
+                <div class="uploadBox">
+                    <el-upload class="" drag
+                        accept=".doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.txt"
+                        :show-file-list="false" :multiple="false" :on-change="handleChange"
+                        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15">
+                        <div class="center m20">
+                            <div class="imgBox">
+                                <img class="resImg" src="/images/upload.png" mode="" />
+                            </div>
+                        </div>
+                        <div class="center ">
+                            <div class="tex ">
+                                拖拽文件到这里或点击上传
+                                <br>
+                                *支持word、pdf、txt格式文件
+                                <br>
+                                *单次创作仅限上传一个文件
+                            </div>
+                        </div>
+                    </el-upload>
+                </div>
+                <div class="info">
+                    ——让每一位知识创造者都能轻松地向世界诠释自己的研究与成果，让专业知识的传播不再受限于领域壁垒——
+                </div>
             </div>
             <div class="rt">
-                <div class="s1"></div>
-                <div class="s2"></div>
+                <div class="s1">
+                    <div class="titleBox">
+                        <div class="imgBox">
+                            <img class="resImg" src="/images/part.png" mode="" />
+                        </div>
+                        <div class="text ml10 vcenter">选择受众</div>
+                    </div>
+                    <div class="userTypeList m30">
+                        <div class="item vcenter pointer" :class="{
+                            pick: item.isPick
+                        }" v-for="(item, index) in userTypeList" :key="index" @click="clickUserTypeList(item)">
+                            <div>
+                                <div class="name center f16 bold">{{ item.name }}</div>
+                                <div class="info center f10">{{ item.info }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="s2 m15">
+                    <div class="titleBox">
+                        <div class="imgBox">
+                            <img class="resImg" src="/images/xz.png" mode="" />
+                        </div>
+                        <div class="text ml10 vcenter">定制风格</div>
+                    </div>
+                    <div class="userTypeList m30">
+                        <div class="item vcenter pointer" @click="clickStypeList(item)" :class="{
+                            pick: item.isPick
+                        }" v-for="(item, index) in styleList.filter((v: any) => v.key == userTypeList.find((v: any) => v.isPick)!.key)"
+                            :key="index">
+                            <div>
+                                <div class="name center f16 bold">{{ item.name }}</div>
+                                <div class="info center f10">{{ item.info }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text ">
+                        *篇幅默认在1500字左右
+                        <br>
+                        *更多风格，敬请期待
+                    </div>
+                    <div class="btnList">
+                        <div class="help pointer">
+                            <div class="imgBox vcenter">
+                                <img class="resImg" src="/images/help.png" mode="" />
+                            </div>
+                            <div class="text ml10 vcenter">联系客服</div>
+                        </div>
+                        <div class="btn pointer" @click="clickStart">
+                            开始创作
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="btm"></div>
@@ -60,17 +134,127 @@
 </template>
 
 <script setup lang="ts">
+import type { UploadProps, UploadUserFile } from 'element-plus'
+import type { AxiosInstance } from 'axios'
+import { service } from '@/apis/index'
+const $http = inject<AxiosInstance>('$http')
+const fileList = ref<UploadUserFile[]>([
+
+])
+const userTypeList = ref([
+    {
+        name: "儿童",
+        info: "适合18岁以下的读者",
+        isPick: true,
+        key: 1,
+    },
+    {
+        name: "所有人",
+        info: "适合所有人理解",
+        isPick: false,
+        key: 2,
+    },
+    {
+        name: "银发族",
+        info: "适合60岁以上的读者",
+        isPick: false,
+        key: 3,
+    },
+])
+const styleList = ref([
+    {
+        name: "启蒙师",
+        info: "1-4岁",
+        isPick: true,
+        key: 1,
+    },
+    {
+        name: "童心科普师",
+        info: "5-8岁",
+        isPick: false,
+        key: 1,
+    },
+    {
+        name: "科学探索家",
+        info: "9-14岁",
+        isPick: false,
+        key: 1,
+    },
+    {
+        name: "思想家",
+        info: "诙谐深刻、辛辣幽默",
+        isPick: false,
+        key: 2,
+    },
+    {
+        name: "温暖你",
+        info: "温暖深刻、隽永细腻",
+        isPick: false,
+        key: 2,
+    },
+    {
+        name: "仗剑江湖",
+        info: "宏大叙事、深邃厚重",
+        isPick: false,
+        key: 2,
+    },
+    {
+        name: "科普智者",
+        info: "价值传承、徐徐道来",
+        isPick: false,
+        key: 3,
+    },
+])
 const router = useRouter();
 const route = useRoute();
 onMounted(() => {
     //
     console.log("Home onMounted");
 });
+const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
+    console.log(uploadFile, uploadFiles)
+    // fileList.value = fileList.value.slice(-3)
+}
 const goToMain = () => {
     router.push({
         name: "main",
     });
 };
+const clickUserTypeList = (item: any) => {
+    userTypeList.value.forEach((v: any) => {
+        v.isPick = false;
+    });
+    item.isPick = true;
+    styleList.value.forEach((v: any) => {
+        v.isPick = false;
+    });
+    for (let v of styleList.value) {
+        if (v.key == item.key) {
+            v.isPick = true;
+            break
+        }
+    }
+}
+const clickStypeList = (item: any) => {
+    styleList.value.forEach((v: any) => {
+        v.isPick = false;
+    });
+    item.isPick = true;
+}
+const clickStart = async () => {
+    console.log('clickStart')
+    const res = await service.startCZ({})
+    console.log(res)
+    if (res && res.code == 0) {
+        res.data.num = 1
+    } else {
+
+    }
+    router.push({
+        name: "main",
+    });
+    console.log(res)
+}
 onActivated(() => {
     //
     console.log("Home onActivated");
@@ -238,6 +422,33 @@ onActivated(() => {
     .mid {
         margin-left: 51px;
         margin-top: 40px;
+        display: flex;
+        justify-content: space-between;
+
+        .titleBox {
+            display: flex;
+
+            .imgBox {
+                width: 30.06px;
+                height: 34.2px;
+                opacity: 1;
+            }
+
+            .text {
+                left: 135px;
+                top: 325px;
+                width: 80px;
+                opacity: 1;
+                /** 文本1 */
+                font-size: 20px;
+                font-weight: 700;
+                letter-spacing: 0px;
+                line-height: 28.96px;
+                color: rgba(7, 7, 7, 1);
+                text-align: left;
+                vertical-align: top;
+            }
+        }
 
         .lf {
             width: 860px;
@@ -248,30 +459,7 @@ onActivated(() => {
             padding: 31px 23px;
 
             // background-color: #fff;
-            .titleBox {
-                display: flex;
 
-                .imgBox {
-                    width: 30.06px;
-                    height: 34.2px;
-                    opacity: 1;
-                }
-
-                .text {
-                    left: 135px;
-                    top: 325px;
-                    width: 80px;
-                    opacity: 1;
-                    /** 文本1 */
-                    font-size: 20px;
-                    font-weight: 700;
-                    letter-spacing: 0px;
-                    line-height: 28.96px;
-                    color: rgba(7, 7, 7, 1);
-                    text-align: left;
-                    vertical-align: top;
-                }
-            }
 
             .stitle {
                 left: 82px;
@@ -289,7 +477,225 @@ onActivated(() => {
                 text-align: left;
                 vertical-align: top;
             }
+
+            .uploadBox {
+                margin-top: 12px;
+                left: 82px;
+                top: 395px;
+
+                opacity: 1;
+
+                .imgBox {
+                    left: 433px;
+                    top: 446px;
+                    width: 80px;
+                    height: 80px;
+                    background: rgba(48, 110, 111, 0.1);
+                    border-radius: 50%;
+                    padding: 20px;
+                }
+
+                .tex {
+                    padding-top: 20px;
+                    left: 373px;
+                    top: 546px;
+                    height: 74px;
+                    opacity: 1;
+                    // /** 文本1 */
+                    // font-size: 14px;
+                    // font-weight: 400;
+                    // letter-spacing: 0px;
+                    // line-height: 20.27px;
+                    // color: rgba(116, 121, 130, 1);
+                    // /** 文本2 */
+                    // font-size: 14px;
+                    // font-weight: 400;
+                    // letter-spacing: 0px;
+                    // line-height: 20.27px;
+                    // color: rgba(48, 110, 111, 1);
+                    // /** 文本3 */
+                    font-size: 14px;
+                    font-weight: 400;
+                    letter-spacing: 0px;
+                    line-height: 20.27px;
+                    color: rgba(116, 121, 130, 1);
+                    text-align: center;
+                    vertical-align: top;
+
+                }
+            }
+
+            .info {
+                margin-top: 67px;
+                left: 82px;
+                top: 743px;
+                height: 24px;
+                opacity: 1;
+                /** 文本1 */
+                font-size: 16px;
+                font-weight: 700;
+                letter-spacing: 0px;
+                line-height: 23.17px;
+                color: rgba(116, 121, 130, 1);
+                text-align: left;
+                vertical-align: middle;
+
+            }
         }
+
+        .rt {
+            padding-right: 45px;
+
+            .s1 {
+                padding: 23px 30px;
+
+                left: 918px;
+                top: 300px;
+                width: 477px;
+                height: 165px;
+                opacity: 1;
+                border-radius: 16px;
+                background: rgba(250, 250, 250, 1);
+
+                .userTypeList {
+                    display: flex;
+                    justify-content: space-between;
+
+                    .item {
+                        left: 1089px;
+                        top: 384px;
+                        width: 135px;
+                        height: 50px;
+                        opacity: 1;
+                        border-radius: 11.11px;
+                        background: rgba(230, 236, 236, 1);
+
+                        &.pick {
+                            border: 2px solid rgba(48, 110, 111, 1);
+                        }
+                    }
+                }
+            }
+
+            .s2 {
+                padding: 23px 30px;
+
+                left: 918px;
+                top: 300px;
+                width: 477px;
+                height: 165px;
+                opacity: 1;
+                border-radius: 16px;
+                background: rgba(250, 250, 250, 1);
+
+                .userTypeList {
+                    display: flex;
+                    justify-content: space-between;
+
+                    .item {
+                        left: 1089px;
+                        top: 384px;
+                        width: 135px;
+                        height: 50px;
+                        opacity: 1;
+                        border-radius: 11.11px;
+                        background: rgba(230, 236, 236, 1);
+
+                        &.pick {
+                            border: 2px solid rgba(48, 110, 111, 1);
+                        }
+                    }
+                }
+
+                >.text {
+                    margin-top: 26px;
+                    left: 948px;
+                    top: 641px;
+                    height: 29px;
+                    opacity: 1;
+                    /** 文本1 */
+                    font-size: 10px;
+                    font-weight: 400;
+                    letter-spacing: 0px;
+                    line-height: 14.48px;
+                    color: rgba(116, 121, 130, 1);
+                    text-align: left;
+                    vertical-align: middle;
+
+                }
+
+                .btnList {
+                    margin-top: 58px;
+                    line-height: 50px;
+                    height: 50px;
+                    display: flex;
+                    justify-content: flex-end;
+
+                    .help {
+
+                        display: flex;
+                        justify-content: flex-end;
+                        margin-right: 20px;
+
+                        .imgBox {
+                            .resImg {
+                                width: 19.09px;
+                                height: 23.29px;
+                            }
+
+                            vertical-align: middle;
+                        }
+
+                        .text {
+                            left: 1144px;
+                            top: 740px;
+                            opacity: 1;
+                            /** 文本1 */
+                            font-size: 14px;
+                            font-weight: 400;
+                            letter-spacing: 0px;
+                            text-decoration-line: underline;
+                            color: rgba(116, 121, 130, 1);
+                            text-align: left;
+                            vertical-align: middle;
+
+                        }
+                    }
+
+                    >.btn {
+                        left: 1215px;
+                        top: 725px;
+                        width: 182px;
+                        height: 50px;
+                        opacity: 1;
+                        border-radius: 11.11px;
+                        background: rgba(48, 110, 111, 1);
+                        left: 1219px;
+                        opacity: 1;
+                        /** 文本1 */
+                        font-size: 24px;
+                        font-weight: 700;
+                        letter-spacing: 0px;
+                        line-height: 50px;
+                        color: rgba(255, 255, 255, 1);
+                        text-align: center;
+
+                    }
+                }
+            }
+        }
+    }
+}
+</style>
+
+<style lang="scss">
+.homePage {
+    .el-upload-dragger {
+        border-radius: 12.97px;
+        background: rgba(250, 250, 250, 1);
+        width: 796px;
+        height: 281px;
+        border: 2px solid rgba(48, 110, 111, 1);
     }
 }
 </style>

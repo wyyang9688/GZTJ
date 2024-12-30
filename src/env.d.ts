@@ -10,3 +10,11 @@ declare module "*.vue" {
 }
 declare module "uview-plus";
 declare module "uqrcodejs";
+
+import { ElementPlus } from 'element-plus'
+ 
+declare module 'vue' {
+  export interface GlobalComponents {
+    [ElementPlus as symbol]: typeof ElementPlus
+  }
+}

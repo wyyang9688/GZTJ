@@ -53,11 +53,13 @@ export default defineConfig({
     port: 8080,
     host: '0.0.0.0',
     proxy: {
-      '/api/': {
-        target:
-          'https://service-rbji0bev-1256505457.cd.apigw.tencentcs.com/release',
+      '/proxy/': {
+        // target: "https://ruyingreview.hentre.top",
+                    // target: "https://rysmall.hentre.top",
+                    // target: "http://172.16.8.80:8089/",
+                    target: "https://local.hentre.com",
         changeOrigin: true,
-        rewrite: p => p.replace(/^\/api/, '')
+        rewrite: p => p.replace(/^\/proxy/, '')
       },
       '/api-prod/': {
         target: 'http://localhost:3001',

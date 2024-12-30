@@ -20,12 +20,14 @@
     "updatehooks": "git config core.hooksPath .git/hooks/ && rm -rf .git/hooks && npx simple-git-hooks"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "@vueuse/core": "^10.7.0",
     "amfe-flexible": "^2.2.1",
     "axios": "^0.27.2",
     "element-plus": "^2.4.3",
     "pinia": "^2.1.7",
     "postcss-pxtorem": "^6.1.0",
+    "qrcode": "^1.5.4",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5"
   },
@@ -35,6 +37,7 @@
     "@commitlint/config-conventional": "^18.4.3",
     "@tsconfig/node18": "^2.0.1",
     "@types/node": "^18.19.3",
+    "@types/qrcode": "^1.5.5",
     "@vitejs/plugin-vue": "^4.5.2",
     "@vitejs/plugin-vue-jsx": "^3.1.0",
     "@vitest/coverage-v8": "^1.0.4",
