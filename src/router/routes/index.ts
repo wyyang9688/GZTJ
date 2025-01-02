@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
     path: '/main',
     name: 'main',
     meta:{
-      keepAlive:true
+      keepAlive:false
     },
     component: () => import('../../pages/main.vue'),
     children: [

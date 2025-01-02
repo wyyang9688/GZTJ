@@ -13,3 +13,10 @@ import HelloWorld from './components/HelloWorld.vue'
 </template>
 
 <style scoped></style>
+
+<style lang="scss">
+.page {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+</style>

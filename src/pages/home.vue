@@ -1,8 +1,8 @@
 <!--  -->
 <template>
-    <div class="homePage">
-        <div class="topCover"></div>
-        <div class="top">
+    <div class="homePage page">
+        <div class="topCover noremMH"></div>
+        <div class="top noremMH">
             <div class="topInnerBox">
                 <div class="title">
                     <div class="imgBox">
@@ -49,22 +49,30 @@
                     上传您想要普及的专业内容，我们将帮助您转化为通俗易懂的科普文章
                 </div>
                 <div class="uploadBox">
-                    <el-upload class="" drag
+                    <el-upload class="" v-loading="loading" drag :data="formData" :on-progress="progress"
+                        :on-success="fileUploadSuc" :on-error="fileError" :headers="{
+                            Authorization: 123
+                        }"
                         accept=".doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.txt"
-                        :show-file-list="false" :multiple="false" :on-change="handleChange"
-                        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15">
+                        :show-file-list="false" :multiple="false" :on-change="handleChange" :action="action">
                         <div class="center m20">
-                            <div class="imgBox">
+                            <div class="imgBox" v-show="!fileName">
                                 <img class="resImg" src="/images/upload.png" mode="" />
+                            </div>
+                            <div class="imgBox" v-show="fileName">
+                                <img class="resImg" src="/images/file.png" mode="" />
                             </div>
                         </div>
                         <div class="center ">
-                            <div class="tex ">
+                            <div class="tex " v-show="!fileName">
                                 拖拽文件到这里或点击上传
                                 <br>
                                 *支持word、pdf、txt格式文件
                                 <br>
                                 *单次创作仅限上传一个文件
+                            </div>
+                            <div class="tex " v-show="fileName">
+                                {{ fileName }}
                             </div>
                         </div>
                     </el-upload>
@@ -116,7 +124,7 @@
                         *更多风格，敬请期待
                     </div>
                     <div class="btnList">
-                        <div class="help pointer">
+                        <div class="help pointer" ref="helpRef" @click="callHelp">
                             <div class="imgBox vcenter">
                                 <img class="resImg" src="/images/help.png" mode="" />
                             </div>
@@ -130,6 +138,14 @@
             </div>
         </div>
         <div class="btm"></div>
+
+
+        <el-popover ref="popoverRef" :virtual-ref="helpRef" :popper-style="{ width: 'fitContent' }" trigger="click"
+            title="" virtual-triggering>
+            <div class="imgBox vcenter" style="width: 400px;">
+                <img class="resImg" src="/images/wxkf.png" mode="" />
+            </div>
+        </el-popover>
     </div>
 </template>
 
@@ -138,13 +154,50 @@ import type { UploadProps, UploadUserFile } from 'element-plus'
 import type { AxiosInstance } from 'axios'
 import { service } from '@/apis/index'
 import com from "@/utils/com"
+import { getConfig } from '@/config/config'
 const $http = inject<AxiosInstance>('$http')
 const fileList = ref<UploadUserFile[]>([
 
 ])
+const loading = ref(false)
+const tid = ref('')
+const fileName = ref('')
+const action = ref(
+    getConfig().VITE_APP_BASE_URL +
+    '/miaobi/creation/page/summary')
+const fileUploadSuc = (response: any, file: any, fileList: any) => {
+    console.log(response)
+    console.log(file)
+    if (response.code == 0) {
+        tid.value = response.data
+        fileName.value = file.name
+        ElMessage({
+            showClose: true,
+            message: '文件上传成功',
+            type: 'success'
+        })
+    } else {
+        if (response.msg) {
+            ElMessage({
+                showClose: true,
+                message: response.msg,
+                type: 'warning'
+            })
+        }
+    }
+    loading.value = false
+}
+const fileError = (err: any, file: any, fileList: any) => {
+    console.error(err)
+    loading.value = false
+}
+const progress = (evt: any) => {
+    console.log(evt)
+    loading.value = true
+}
 const userTypeList = ref([
     {
-        name: "儿童",
+        name: "儿童版",
         info: "适合18岁以下的读者",
         isPick: true,
         key: 1,
@@ -168,58 +221,80 @@ const styleList = ref([
         info: "1-4岁",
         isPick: true,
         key: 1,
+        val: 'initiation'
     },
     {
         name: "童心科普师",
         info: "5-8岁",
         isPick: false,
         key: 1,
+        val: 'childishness'
     },
     {
         name: "科学探索家",
         info: "9-14岁",
         isPick: false,
         key: 1,
+        val: 'explorer'
     },
     {
         name: "思想家",
         info: "诙谐深刻、辛辣幽默",
         isPick: false,
         key: 2,
+        val: 'thoughtful'
     },
     {
         name: "温暖你",
         info: "温暖深刻、隽永细腻",
         isPick: false,
         key: 2,
+        val: 'warm'
     },
     {
         name: "仗剑江湖",
         info: "宏大叙事、深邃厚重",
         isPick: false,
         key: 2,
+        val: 'nation'
     },
     {
         name: "科普智者",
         info: "价值传承、徐徐道来",
         isPick: false,
         key: 3,
+        val: 'seniors'
     },
 ])
 const router = useRouter();
 const route = useRoute();
+const formData = ref({
+    email: route.query.address
+})
+const helpRef = ref()
+const popoverRef = ref()
+const callHelp = () => {
+    unref(popoverRef).popperRef?.delayHide?.()
+}
 onMounted(() => {
     //
     console.log("Home onMounted");
+    console.log(route)
+    console.log(route.query)
     com.scrollToElementWithClass('kscz')
 });
 const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
-    console.log(uploadFile, uploadFiles)
+
+    console.log(uploadFile)
     // fileList.value = fileList.value.slice(-3)
 }
 const goToMain = () => {
     router.push({
         name: "main",
+        query: {
+            address: route.query.address,
+
+        }
     });
 };
 const clickUserTypeList = (item: any) => {
@@ -245,17 +320,33 @@ const clickStypeList = (item: any) => {
 }
 const clickStart = async () => {
     console.log('clickStart')
-    const res = await service.startCZ({})
-    console.log(res)
-    if (res && res.code == 0) {
-        res.data.num = 1
-    } else {
-
+    if (!fileName.value) {
+        ElMessage('请先上传一个文件，再进行操作')
+        return
     }
+    if (!tid.value) {
+        ElMessage('文件上传错误，请重新上传文件')
+        return
+    }
+    // const res = await service.startCZ({})
+    // console.log(res)
+    // if (res && res.code == 0) {
+    //     res.data.num = 1
+    // } else {
+
+    // }
+    localStorage.setItem('styleItem', JSON.stringify(styleList.value.filter(v => v.isPick)[0]))
+    localStorage.setItem('userTypeItem', JSON.stringify(userTypeList.value.filter(v => v.isPick)[0]))
+    localStorage.setItem('fileName', fileName.value)
+    localStorage.setItem('tid', tid.value)
     router.push({
         name: "main",
+        query: {
+            address: route.query.address,
+
+        },
     });
-    console.log(res)
+    // console.log(res)
 }
 onActivated(() => {
     //
@@ -264,6 +355,7 @@ onActivated(() => {
 </script>
 <style lang="scss" scoped>
 .homePage {
+
     left: 0px;
     top: 0px;
     width: 1440px;
@@ -287,11 +379,14 @@ onActivated(() => {
         // background: conic-gradient(from 90deg at 50% 50%, rgba(239, 244, 244, 1) 5.9%, #D5E2DD 6.18%, transparent 43.05%);
     }
 
+    .noremMH {}
+
     .top {
         left: 0px;
         top: 0px;
         width: 1440px;
         height: 260px;
+
         opacity: 1;
         // background: conic-gradient(from 90deg at 50% 50%, rgba(48, 110, 111, 0.38) 5.9%, rgba(165, 210, 61, 0.45) 21.18%, rgba(193, 221, 138, 0.34) 43.05%, rgba(230, 236, 236, 0.34) 56.6%, rgba(255, 255, 255, 0) 97.22%);
 
@@ -313,7 +408,7 @@ onActivated(() => {
                     position: absolute;
                     left: 113px;
                     top: 29px;
-                    width: 223px;
+                    // width: 223px;
                     height: 55px;
                     opacity: 1;
                     /** 文本1 */
@@ -391,7 +486,7 @@ onActivated(() => {
                     margin-left: 18px;
                     left: 137px;
                     top: 205px;
-                    width: 90px;
+                    // width: 90px;
                     height: 30px;
                     opacity: 1;
                     /** 文本1 */
@@ -439,7 +534,7 @@ onActivated(() => {
             .text {
                 left: 135px;
                 top: 325px;
-                width: 80px;
+                // width: 80px;
                 opacity: 1;
                 /** 文本1 */
                 font-size: 20px;

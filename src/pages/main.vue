@@ -1,13 +1,13 @@
 <!--  -->
 <template>
-    <div class='mainPage'>
+    <div class='mainPage page'>
         <div class="top">
             <div class="title">
                 <div class="imgBox">
                     <img class="resImg" src="/images/ks.png" mode="" />
                 </div>
                 <div class="text">格致通解</div>
-                <div class="help pointer">
+                <div class="help pointer" ref="helpRef" @click="callHelp">
                     <div class="imgBox vcenter">
                         <img class="resImg" src="/images/help.png" mode="" />
                     </div>
@@ -35,7 +35,7 @@
                                     <div class="stitle">{{ item.stitle }}</div>
                                 </div>
                             </div>
-                            <div class="return vcenter" @click="goBack()">
+                            <div class="return vcenter pointer" @click="goBack()">
                                 <div class="imgBox">
                                     <img class="resImg" src="/images/back.png" mode="" />
                                 </div>
@@ -52,11 +52,18 @@
                             </div>
                         </div>
                         <div class="input myInput vcenter">
-                            <el-input class="clearInput" v-model="input" placeholder="请输入邮箱地址" />
+                            <el-input class="clearInput" ref="inputRef" clearable
+                                :title="isDisabledEdit ? '请点击右侧图标进行编辑' : ''" :disabled="isDisabledEdit" v-model="email"
+                                placeholder="请输入邮箱地址" />
                         </div>
                         <div class="icon2 vcenter">
-                            <div class="imgBox">
+                            <div v-show="isDisabledEdit" class="imgBox pointer" @click="emailEditSwitch">
                                 <img class="resImg" src="/images/edit.png" mode="" />
+
+                            </div>
+                            <div v-show="!isDisabledEdit" class="imgBox pointer" @click="emailEditCheck">
+                                <img class="resImg" src="/images/check.png" mode="" />
+
                             </div>
                         </div>
                     </div>
@@ -73,7 +80,7 @@
                                 微信支付
                             </div>
                         </div>
-                        <div class="item m20">
+                        <!-- <div class="item m20">
                             <div class="icon vcenter">
                                 <div class="imgBox">
                                     <img class="resImg" src="/images/ali.png" mode="" />
@@ -82,15 +89,26 @@
                             <div class="payname vcenter">
                                 支付宝支付
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="rt" v-show="payType == 1">
                     <div class="cBox vcenter">
+                        <div class="reload vcenter pointer" @click="reloadQr">
+                            <div class="box">
+                                <div class="icon center">
+                                    <el-icon size="60">
+                                        <RefreshRight />
+                                    </el-icon>
+                                </div>
+                                <!-- <div class="text center f18">确认邮箱地址</div> -->
+                                <div class="text center f18">点击刷新二维码</div>
+                            </div>
+                        </div>
                         <canvas class="qrcode"></canvas>
                     </div>
-                    <div class="info">
-                        <div class="num">68.6</div>
+                    <div class="info" v-if="prdItem?.info?.amount">
+                        <div class="num">{{ prdItem?.info?.amount }}</div>
                         <div class="text">元</div>
                         <div class="unit">/篇</div>
                     </div>
@@ -110,6 +128,23 @@
                                 <div class="label">税号：</div>
                                 <div class="val"></div>
                             </div>
+                            <div class="btnG center">
+                                <div class="btn vcenter m10" style="left: 1003px;
+top: 407px;
+width: 118px;
+height: 40px;
+opacity: 1;
+border-radius: 8.89px;
+background: rgba(48, 110, 111, 1);font-size: 16px;
+font-weight: 700;
+letter-spacing: 0px;
+color: rgba(255, 255, 255, 1);
+text-align: center;
+vertical-align: middle;
+">
+                                    确定
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -125,15 +160,59 @@
             <br>
             OF SCIENCE
         </div>
+
+
+
+        <el-popover ref="popoverRef" :virtual-ref="helpRef" :popper-style="{ width: 'fitContent' }" trigger="click"
+            title="" virtual-triggering>
+            <div class="imgBox vcenter" style="width: 400px;">
+                <img class="resImg" src="/images/wxkf.png" mode="" />
+            </div>
+        </el-popover>
     </div>
 </template>
 
 <script setup lang='ts'>
+import { service } from '@/apis/index'
 import QRCode from "qrcode";
-
+const helpRef = ref()
+const popoverRef = ref()
+const callHelp = () => {
+    unref(popoverRef).popperRef?.delayHide?.()
+}
 const route = useRoute()
 const router = useRouter()
-const input = ref('')
+const email = ref<any>('')
+const isDisabledEdit = ref(true)
+
+const inputRef = ref()
+const emailEditSwitch = () => {
+    isDisabledEdit.value = false
+    inputRef.value.focus();
+}
+const emailEditCheck = () => {
+    isDisabledEdit.value = true
+}
+const prdItem = ref<any>({
+    info: {
+        amount: 0
+    }
+})
+const getPrd = async () => {
+    const res = await service.getPrd({})
+    if (res.code == 0 && res.data?.length) {
+        prdItem.value = res.data[0]
+    } else {
+        ElMessage({
+            message: '获取系统信息失败，请稍后重试',
+            showClose: true,
+            type: 'warning'
+        })
+    }
+}
+const reloadQr = () => {
+    gcanvas("https://www.baidu.com/?time=" + new Date().getTime())
+}
 const showList = ref([
     {
         icon: '/images/fwzc.png',
@@ -161,7 +240,8 @@ const goBack = () => {
 onMounted(() => {
     //
     console.log('main onMounted')
-    gcanvas("https://www.baidu.com/https://www.baidu.com/https://www.baidu.com/")
+    checkRouteQuery()
+    getPrd()
 
 
 })
@@ -172,16 +252,43 @@ const gcanvas = (code: string) => {
 
     });
 }
+const checkRouteQuery = () => {
+    if (route.query.address) {
+        email.value = route.query.address
+        console.log(route.query.address)
+    }
+    let styleItem = localStorage.getItem('styleItem')
+    if (styleItem) {
+        styleItem = JSON.parse(styleItem)
+        showList.value[2].title = (styleItem as any).name
+        showList.value[2].stitle = (styleItem as any).info
+    }
+    let userTypeItem = localStorage.getItem('userTypeItem')
+    if (userTypeItem) {
+        userTypeItem = JSON.parse(userTypeItem)
+        showList.value[1].title = (userTypeItem as any).name
+        showList.value[1].stitle = (userTypeItem as any).info
+    }
+    console.log(
+        styleItem
+    )
+    showList.value[0].title = localStorage.getItem('fileName') || ''
+
+    console.log(
+        userTypeItem
+    )
+}
 onActivated(() => {
     //
     console.log('main onActivated')
-    console.log(route)
+    checkRouteQuery()
 })
 
 
 </script>
 <style lang='scss' scoped>
 .mainPage {
+    position: relative;
     width: 1440px;
     width: 100%;
     height: 814px;
@@ -222,6 +329,7 @@ onActivated(() => {
 
             .help {
                 position: absolute;
+                z-index: 100;
                 left: 412px;
                 top: 117px;
                 width: 32px;
@@ -236,7 +344,7 @@ onActivated(() => {
                     opacity: 1;
                     /** 文本1 */
                     font-size: 14px;
-                    font-weight: 400;
+                    font-weight: bold;
                     letter-spacing: 0px;
                     line-height: 20.27px;
                     text-decoration-line: underline;
@@ -305,7 +413,7 @@ onActivated(() => {
 
                         .title {
                             font-size: 16px;
-                            font-weight: 400;
+                            font-weight: bold;
                             letter-spacing: 0px;
                             line-height: 23.17px;
                             color: rgba(0, 0, 0, 0.7);
@@ -315,7 +423,7 @@ onActivated(() => {
 
                         .stitle {
                             font-size: 10px;
-                            font-weight: 400;
+                            font-weight: bold;
                             letter-spacing: 0px;
                             line-height: 14.48px;
                             color: rgba(116, 121, 130, 1);
@@ -407,7 +515,7 @@ onActivated(() => {
                         .payname {
                             margin-left: 9px;
                             font-size: 16px;
-                            font-weight: 400;
+                            font-weight: bold;
                             letter-spacing: 0px;
                             line-height: 23.17px;
                             color: rgba(0, 0, 0, 1);
@@ -429,6 +537,17 @@ onActivated(() => {
                 background: rgba(255, 255, 255, 1);
 
                 .cBox {
+                    position: relative;
+
+                    .reload {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 339px;
+                        height: 280px;
+                        background-color: rgba(255, 255, 255, 0.9);
+                    }
+
                     .qrcode {
                         width: 280px !important;
                         height: 280px !important;
@@ -490,7 +609,7 @@ onActivated(() => {
                     left: 859px;
                     top: 251px;
                     width: 406px;
-                    height: 193px;
+                    height: 233px;
                     opacity: 1;
                     border-radius: 16px;
                     background: rgba(255, 255, 255, 1);
@@ -582,10 +701,15 @@ onActivated(() => {
 .myInput {
     width: 100%;
 
+    .el-input.is-disabled .el-input__wrapper {
+        background-color: #fff !important;
+    }
+
     .clearInput {
         .el-input__wrapper {
             box-shadow: none !important;
         }
+
 
         input {
             padding-left: 26px;

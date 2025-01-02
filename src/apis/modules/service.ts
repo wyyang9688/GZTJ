@@ -8,9 +8,17 @@ function startCZ(params:any): ResponseData<{ num: number }> {
     }
   })
 }
+function getPrd(params:any): ResponseData<any> {
+  return ajax.get('/miaobi/creationcard?type=once', {
+    params: {
+      ...params
+    }
+  })
+}
 
 
 
 export default {
-    startCZ
+    startCZ,
+    getPrd
 }

@@ -11,6 +11,9 @@ function setRem() {
     // if (currentScale < 0.85 && getWidth > 1024) {
     //   currentScale = 0.855
     // }
+    if(getWidth>1670){
+      defalutFontSize=168
+    }
    
     // // 当前为平板时
     // if (getWidth <= 1024) {

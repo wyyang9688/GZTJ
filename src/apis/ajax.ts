@@ -12,7 +12,7 @@ instance.interceptors.request.use((config) => {
   const { method, params } = config
   // 附带鉴权的token
   const headers: any = {
-    token: localStorage.getItem('token')
+    Authorization: localStorage.getItem('token')||'authorization'
   }
   // 不缓存get请求
   if (method === 'get') {
@@ -26,7 +26,7 @@ instance.interceptors.request.use((config) => {
       params: {}
     })
   }
-
+console.log(headers)
   return {
     ...config,
     headers
@@ -179,7 +179,7 @@ class Http {
         const { method, params } = config
         // 附带鉴权的token
         const headers: any = {
-          token: localStorage.getItem('token')||'abc123',
+          Authorization: localStorage.getItem('token')||'Authorization',
           ...config.headers
         }
         // 不缓存get请求
