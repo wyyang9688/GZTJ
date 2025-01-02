@@ -122,7 +122,7 @@
                             </div>
                             <div class="text ml10 vcenter">联系客服</div>
                         </div>
-                        <div class="btn pointer" @click="clickStart">
+                        <div class="btn pointer kscz" @click="clickStart">
                             开始创作
                         </div>
                     </div>
@@ -137,6 +137,7 @@
 import type { UploadProps, UploadUserFile } from 'element-plus'
 import type { AxiosInstance } from 'axios'
 import { service } from '@/apis/index'
+import com from "@/utils/com"
 const $http = inject<AxiosInstance>('$http')
 const fileList = ref<UploadUserFile[]>([
 
@@ -210,6 +211,7 @@ const route = useRoute();
 onMounted(() => {
     //
     console.log("Home onMounted");
+    com.scrollToElementWithClass('kscz')
 });
 const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
     console.log(uploadFile, uploadFiles)
@@ -544,7 +546,7 @@ onActivated(() => {
         }
 
         .rt {
-            padding-right: 45px;
+            padding-right: 30px;
 
             .s1 {
                 padding: 23px 30px;
