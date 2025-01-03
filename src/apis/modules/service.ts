@@ -35,7 +35,12 @@ const service={
         return ajax.post('/miaobi/creation/reading/generation', {
             ...params
         })
-    }
+    },
+    sendInvoice(params:any): ResponseData<any>{
+        return ajax.post('/api/email/invoice/save', {
+            ...params
+        })
+    },
 }
 
 

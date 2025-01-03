@@ -133,14 +133,26 @@
                             <div class="ftitle">发票管理：</div>
                             <div class="row">
                                 <div class="label">发票抬头：</div>
-                                <div class="val">XXX</div>
+                                <div class="val">
+                                    <div class="input myInput vcenter">
+                                        <el-input class="tinput" :disabled="!isCanSendInvoice" clearable
+                                            v-model="invoicesareraised" placeholder="请输入发票抬头" />
+                                    </div>
+
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="label">税号：</div>
-                                <div class="val"></div>
+                                <div class="val">
+                                    <div class="input myInput vcenter">
+                                        <el-input class="tinput" :disabled="!isCanSendInvoice" clearable
+                                            v-model="taxpayerId" placeholder="请输入税号" />
+                                    </div>
+
+                                </div>
                             </div>
-                            <div class="btnG center">
-                                <div class="btn vcenter m10" style="left: 1003px;
+                            <div class="btnG center" v-if="isCanSendInvoice">
+                                <div class="btn vcenter m10" @click="sendInvoice" style="left: 1003px;
 top: 407px;
 width: 118px;
 height: 40px;
@@ -318,22 +330,69 @@ const reloadQr = () => {
 }
 const showList = ref([
     {
-        icon: '/images/fwzc.png',
+        icon: './images/fwzc.png',
         title: '文件名',
         stitle: '',
     },
     {
-        icon: '/images/part.png',
+        icon: './images/part.png',
         title: '儿童版',
         stitle: '适合18岁以下的读者',
     },
     {
-        icon: '/images/xz.png',
+        icon: './images/xz.png',
         title: '思想家',
         stitle: '诙谐深刻、辛辣幽默',
         val: ''
     },
 ])
+const invoicesareraised = ref('')
+const taxpayerId = ref('')
+const isCanSendInvoice = ref(true)
+const sendInvoice = async () => {
+    if (!invoicesareraised.value || !taxpayerId.value) {
+        ElMessage({
+            message: "请填写正确的发票抬头和税号，重新操作",
+            showClose: true,
+            type: 'warning'
+        })
+        return
+    }
+    const loading = ElLoading.service({
+        lock: true,
+        text: 'Loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+    })
+    const res = await service.sendInvoice({
+        invoice: {
+            invoicesareraised: invoicesareraised.value,
+            taxpayerId: taxpayerId.value,
+            amount: prdItem.value.info?.amount,
+            mailAddress: email.value,
+            orderId: orderId.value
+        },
+
+    })
+    loading.close()
+    if (res.code == 0) {
+        isCanSendInvoice.value = false
+        ElMessage({
+            message: '开票申请提交成功，开票成功后会发送至您指定的邮箱~',
+            type: 'success',
+            duration: 5000,
+            showClose: true,
+
+        })
+    } else {
+        // if (res.msg) {
+        //     ElMessage({
+        //         message: res.msg,
+        //         showClose: true,
+        //         type: 'warning'
+        //     })
+        // }
+    }
+}
 const payType = ref(1)
 // setTimeout(() => {
 //     payType.value = 2
@@ -748,6 +807,11 @@ onActivated(() => {
                             overflow: hidden;
                             text-overflow: ellipsis;
 
+                            .label {
+                                text-align: right;
+                                width: 85px;
+                            }
+
                             .label,
                             .val {
                                 font-size: 16px;
@@ -804,10 +868,19 @@ onActivated(() => {
 <style lang="scss">
 .myInput {
     width: 100%;
+    height: 100%;
 
-    .el-input.is-disabled .el-input__wrapper {
-        background-color: #fff !important;
+    .el-input {
+        height: 100%;
     }
+
+    .el-input .el-input__wrapper {
+        background-color: transparent !important;
+        box-shadow: none !important;
+        // height: 100%;
+    }
+
+    .tinput {}
 
     .clearInput {
         .el-input__wrapper {
@@ -818,6 +891,7 @@ onActivated(() => {
         input {
             padding-left: 26px;
             width: 100%;
+            height: 100%;
             border: none;
             outline: none;
             font-size: 20px;

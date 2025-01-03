@@ -59,7 +59,8 @@ export default defineConfig({
       '/proxy/': {
         // target: "https://ruyingreview.hentre.top",
                     // target: "https://rysmall.hentre.top",
-                    target: "http://172.16.8.58:8089",
+                    // target: "http://172.16.8.58:8089",
+                    target: "http://172.16.8.80:8089",
                     // target: "https://local.hentre.com",
         changeOrigin: true,
         rewrite: p => p.replace(/^\/proxy/, '')
