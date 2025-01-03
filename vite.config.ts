@@ -36,6 +36,9 @@ export default defineConfig({
       defaultLocale: 'zh-cn'
     })
   ],
+  esbuild:{
+    drop: ["console", "debugger"]
+  },
   test: {
     globals: true,
     environment: 'jsdom',

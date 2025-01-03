@@ -20,6 +20,10 @@ import HelloWorld from './components/HelloWorld.vue'
   margin: 0 auto;
 }
 
+.helpImg {
+  width: 400px;
+}
+
 .myElMsg {
   .el-button--primary {
     background: rgba(48, 110, 111, 1);

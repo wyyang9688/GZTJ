@@ -176,7 +176,7 @@ vertical-align: middle;
 
         <el-popover ref="popoverRef" :virtual-ref="helpRef" :popper-style="{ width: 'fitContent' }" trigger="click"
             title="" virtual-triggering>
-            <div class="imgBox vcenter" style="width: 400px;">
+            <div class="imgBox vcenter helpImg" style="">
                 <img class="resImg" src="/images/wxkf.png" mode="" />
             </div>
         </el-popover>
