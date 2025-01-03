@@ -16,9 +16,32 @@ function getPrd(params:any): ResponseData<any> {
   })
 }
 
+const service={
+    getPayUrl(params:any): ResponseData<{
+        orderId:string;
+        qrcode:string
+    }>{
+        return ajax.post('/miaobi/creationcard/buy', {
+            
+              ...params
+          })
+    },
+    queryOrderById(orderId :string): ResponseData<any>{
+        return ajax.get('/miaobi/creationcard/order', {
+              id:orderId
+          })
+    },
+    generationGZTJ(params:any): ResponseData<any>{
+        return ajax.post('/miaobi/creation/reading/generation', {
+            ...params
+        })
+    }
+}
+
 
 
 export default {
     startCZ,
-    getPrd
+    getPrd,
+    ...service
 }

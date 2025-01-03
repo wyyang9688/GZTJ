@@ -161,6 +161,7 @@ const fileList = ref<UploadUserFile[]>([
 ])
 const loading = ref(false)
 const tid = ref('')
+const cid = ref('')//创作ID
 const fileName = ref('')
 const action = ref(
     getConfig().VITE_APP_BASE_URL +
@@ -169,7 +170,8 @@ const fileUploadSuc = (response: any, file: any, fileList: any) => {
     console.log(response)
     console.log(file)
     if (response.code == 0) {
-        tid.value = response.data
+        tid.value = response.data.tid
+        cid.value = response.data.id
         fileName.value = file.name
         ElMessage({
             showClose: true,
@@ -281,6 +283,27 @@ onMounted(() => {
     console.log("Home onMounted");
     console.log(route)
     console.log(route.query)
+
+    if (route.query.address) {
+        localStorage.setItem('uid', String(route.query.address))
+    } else {
+        ElMessageBox.prompt('请输入邮箱地址以继续', '请补全您的邮箱地址', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            showClose: false,
+            showCancelButton: false,
+            customClass: 'myElMsg',
+            inputPattern:
+                /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+            inputErrorMessage: '无效的邮箱地址',
+        })
+            .then(({ value }) => {
+                localStorage.setItem('uid', String(value))
+            })
+            .catch(() => {
+
+            })
+    }
     com.scrollToElementWithClass('kscz')
 });
 const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
@@ -339,6 +362,7 @@ const clickStart = async () => {
     localStorage.setItem('userTypeItem', JSON.stringify(userTypeList.value.filter(v => v.isPick)[0]))
     localStorage.setItem('fileName', fileName.value)
     localStorage.setItem('tid', tid.value)
+    localStorage.setItem('cid', cid.value)
     router.push({
         name: "main",
         query: {

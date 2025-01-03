@@ -94,7 +94,7 @@
                 </div>
                 <div class="rt" v-show="payType == 1">
                     <div class="cBox vcenter">
-                        <div class="reload vcenter pointer" @click="reloadQr">
+                        <div class="reload vcenter pointer" v-if="isShowReload" @click="reloadQr">
                             <div class="box">
                                 <div class="icon center">
                                     <el-icon size="60">
@@ -103,6 +103,17 @@
                                 </div>
                                 <!-- <div class="text center f18">确认邮箱地址</div> -->
                                 <div class="text center f18">点击刷新二维码</div>
+                            </div>
+                        </div>
+                        <div class="reload vcenter pointer" v-if="isShowEditMsg" @click="checkMsg">
+                            <div class="box">
+                                <div class="icon center">
+                                    <el-icon size="60">
+                                        <Edit />
+                                    </el-icon>
+                                </div>
+                                <!-- <div class="text center f18">确认邮箱地址</div> -->
+                                <div class="text center f18">请先确认好邮箱地址</div>
                             </div>
                         </div>
                         <canvas class="qrcode"></canvas>
@@ -186,22 +197,114 @@ const email = ref<any>('')
 const isDisabledEdit = ref(true)
 
 const inputRef = ref()
+const isShowEditMsg = ref(false)
 const emailEditSwitch = () => {
-    isDisabledEdit.value = false
+    if (isCanEditEmail) {
+        isDisabledEdit.value = false
+        inputRef.value.focus();
+        isShowEditMsg.value = true
+    } else {
+        ElMessage({
+            message: '邮件地址已锁定，不能更改',
+            showClose: true,
+            type: 'warning'
+        })
+    }
+
+}
+const checkMsg = () => {
+    ElMessage({
+        message: '请先确认好邮箱地址',
+        showClose: true,
+        type: 'warning'
+    })
     inputRef.value.focus();
 }
 const emailEditCheck = () => {
-    isDisabledEdit.value = true
+    let reg = /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/
+    if (reg.test(email.value)) {
+
+        isDisabledEdit.value = true
+        isShowEditMsg.value = false
+    } else {
+        ElMessage({
+            message: '请填写正确的邮件地址',
+            showClose: true,
+            type: 'warning'
+        })
+    }
 }
 const prdItem = ref<any>({
+    id: '',
     info: {
         amount: 0
     }
 })
+const isCanEditEmail = ref(true)
+const isShowReload = ref(false)
+const orderId = ref('')
+const generationGZTJ = async () => {
+    payType.value = 2
+    isCanEditEmail.value = false
+    isDisabledEdit.value = true
+    const res = await service.generationGZTJ({
+        id: localStorage.getItem('cid'),//上传文件的id
+        uid: localStorage.getItem('uid'),
+        email: email.value,
+        tid: localStorage.getItem('tid'),
+        style: showList.value[2].val
+    })
+    if (res.code == 0) {
+
+    }
+}
+const queryOrder = async () => {
+    const res = await service.queryOrderById(orderId.value)
+    if (res.code == 0) {
+        if (res.data.status == 3) {
+
+            generationGZTJ()
+            closeReQuery()
+        }
+    }
+}
+const closeReQuery = () => {
+    console.log('closeReQuery')
+    if (timer.value) {
+        clearInterval(timer.value)
+        timer.value = null
+    }
+}
+onUnmounted(() => {
+    closeReQuery()
+})
+const timer = ref<any>(null)
+const reQueryOrder = () => {
+    if (timer.value) {
+        clearInterval(timer.value)
+        timer.value = null
+    }
+    timer.value = setInterval(() => {
+        queryOrder()
+    }, 3000)
+}
+const getPayUrl = async () => {
+    const res = await service.getPayUrl({
+        id: prdItem.value.id,
+        uid: localStorage.getItem('uid'),
+        payType: 15
+    })
+    if (res.code == 0) {
+        gcanvas(res.data.qrcode)
+        orderId.value = res.data.orderId
+        reQueryOrder()
+    }
+}
 const getPrd = async () => {
     const res = await service.getPrd({})
     if (res.code == 0 && res.data?.length) {
         prdItem.value = res.data[0]
+        getPayUrl()
     } else {
         ElMessage({
             message: '获取系统信息失败，请稍后重试',
@@ -211,7 +314,7 @@ const getPrd = async () => {
     }
 }
 const reloadQr = () => {
-    gcanvas("https://www.baidu.com/?time=" + new Date().getTime())
+    getPayUrl()
 }
 const showList = ref([
     {
@@ -228,6 +331,7 @@ const showList = ref([
         icon: '/images/xz.png',
         title: '思想家',
         stitle: '诙谐深刻、辛辣幽默',
+        val: ''
     },
 ])
 const payType = ref(1)
@@ -253,15 +357,15 @@ const gcanvas = (code: string) => {
     });
 }
 const checkRouteQuery = () => {
-    if (route.query.address) {
-        email.value = route.query.address
-        console.log(route.query.address)
+    if (route.query.address || localStorage.getItem('uid')) {
+        email.value = route.query.address || localStorage.getItem('uid')
     }
     let styleItem = localStorage.getItem('styleItem')
     if (styleItem) {
         styleItem = JSON.parse(styleItem)
         showList.value[2].title = (styleItem as any).name
         showList.value[2].stitle = (styleItem as any).info
+        showList.value[2].val = (styleItem as any).val
     }
     let userTypeItem = localStorage.getItem('userTypeItem')
     if (userTypeItem) {

@@ -19,4 +19,10 @@ import HelloWorld from './components/HelloWorld.vue'
   max-width: 1440px;
   margin: 0 auto;
 }
+
+.myElMsg {
+  .el-button--primary {
+    background: rgba(48, 110, 111, 1);
+  }
+}
 </style>
