@@ -506,6 +506,11 @@ onActivated(() => {
                 opacity: 1;
                 display: flex;
 
+                .imgBox {
+                    height: 36px;
+                    width: 36px;
+                }
+
                 .text {
                     margin-left: 18px;
                     left: 137px;
@@ -529,6 +534,10 @@ onActivated(() => {
                 top: 206px;
                 height: 36px;
                 opacity: 1;
+
+                .imgBox {
+                    width: 40.6px;
+                }
             }
 
             .item3 {
