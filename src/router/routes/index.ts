@@ -27,40 +27,40 @@ const routes: RouteRecordRaw[] = [
     },
     component: () => import('../../pages/main.vue'),
     children: [
-      { path: 'element', component: Element, name: 'element' },
-      { path: 'axios', component: Axios, name: 'axios' },
-      { path: 'vueuse', component: VueUse, name: 'vueuse' },
+      // { path: 'element', component: Element, name: 'element' },
+      // { path: 'axios', component: Axios, name: 'axios' },
+      // { path: 'vueuse', component: VueUse, name: 'vueuse' },
       
     ]
   },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (About.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import('../../pages/AboutView.vue')
-  },
-  {
-    path: '/demos',
-    name: 'demos',
-    component: demosWrapper,
-    redirect: '/demos/element',
-    children: [
-      { path: 'element', component: Element, name: 'element' },
-      { path: 'axios', component: Axios, name: 'axios' },
-      { path: 'vueuse', component: VueUse, name: 'vueuse' },
-      {
-        path: 'dynamic/:id',
-        component: Dynamic,
-        meta: {
-          requireLogin: true,
-          isAdmin: true
-        },
-        name: 'dynamic'
-      }
-    ]
-  }
+  // {
+  //   path: '/about',
+  //   name: 'about',
+  //   // route level code-splitting
+  //   // this generates a separate chunk (About.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () => import('../../pages/AboutView.vue')
+  // },
+  // {
+  //   path: '/demos',
+  //   name: 'demos',
+  //   component: demosWrapper,
+  //   redirect: '/demos/element',
+  //   children: [
+  //     { path: 'element', component: Element, name: 'element' },
+  //     { path: 'axios', component: Axios, name: 'axios' },
+  //     { path: 'vueuse', component: VueUse, name: 'vueuse' },
+  //     {
+  //       path: 'dynamic/:id',
+  //       component: Dynamic,
+  //       meta: {
+  //         requireLogin: true,
+  //         isAdmin: true
+  //       },
+  //       name: 'dynamic'
+  //     }
+  //   ]
+  // }
 ]
 
 export default routes
