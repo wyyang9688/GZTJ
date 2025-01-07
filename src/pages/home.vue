@@ -450,7 +450,7 @@ onActivated(() => {
                 position: absolute;
                 left: 75px;
                 top: 104px;
-                width: 344px;
+                // width: 344px;
                 height: 47px;
                 opacity: 1;
                 /** 文本1 */
