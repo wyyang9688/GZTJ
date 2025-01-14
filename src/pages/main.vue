@@ -7,7 +7,7 @@
                     <img class="resImg" src="/images/ks.png" mode="" />
                 </div>
                 <div class="text">格致通解</div>
-                <div class="help pointer" ref="helpRef" @click="callHelp">
+                <div class="help pointer" ref="helpRef" @click="callHelp(helpRef)">
                     <div class="imgBox vcenter">
                         <img class="resImg" src="/images/help.png" mode="" />
                     </div>
@@ -128,7 +128,16 @@
                     <div class="status">
                         支付成功！
                     </div>
-                    <div class="fpBox">
+                    <div class="statusMsg f16 m20" style="
+font-weight: 400;
+letter-spacing: 0px;
+line-height: 26.06px;
+color: rgba(116, 121, 130, 1);">
+                        支付成功！如果需要发票可以点击
+                        <span class="bold pointer" ref="helpRef2" @click="callHelp(helpRef2)">联系客服</span>
+                        获取发票
+                    </div>
+                    <div class="fpBox" v-if="false">
                         <div class="fp">
                             <div class="ftitle">发票管理：</div>
                             <div class="row">
@@ -186,9 +195,9 @@ vertical-align: middle;
 
 
 
-        <el-popover ref="popoverRef" :virtual-ref="helpRef" :popper-style="{ width: 'fitContent' }" trigger="click"
-            title="" virtual-triggering>
-            <div class="imgBox vcenter helpImg" style="">
+        <el-popover ref="popoverRef" :visible="isShowPop" :virtual-ref="virtualRef" @after-leave="afterLeave"
+            :popper-style="{ width: 'fitContent' }" trigger="click" title="" virtual-triggering>
+            <div class="imgBox vcenter helpImg" v-click-outside="onClickOutside" style="">
                 <img class="resImg" src="/images/wxkf.png" mode="" />
             </div>
         </el-popover>
@@ -197,11 +206,33 @@ vertical-align: middle;
 
 <script setup lang='ts'>
 import { service } from '@/apis/index'
+
+import { ClickOutside as vClickOutside } from 'element-plus'
 import QRCode from "qrcode";
 const helpRef = ref()
+const helpRef2 = ref()
+const virtualRef = ref()
 const popoverRef = ref()
-const callHelp = () => {
-    unref(popoverRef).popperRef?.delayHide?.()
+const isShowPop = ref(false)
+const afterLeave = () => {
+    console.log('afterLeave')
+    // isShowPop.value = false
+}
+const onClickOutside = () => {
+    isShowPop.value = false
+}
+const callHelp = (ref: any, flag: boolean = false) => {
+    isShowPop.value = true
+
+    virtualRef.value = ref
+    console.log(ref)
+    // nextTick(() => {
+    //     // unref(virtualRef.value).popperRef?.delayHide?.()
+    //     if (!flag)
+    //         callHelp(ref, true)
+    // })
+
+
 }
 const route = useRoute()
 const router = useRouter()
@@ -754,7 +785,7 @@ onActivated(() => {
             }
 
             .rt2 {
-                width: 350px;
+                width: 465px;
                 margin-right: 144px;
 
                 .status {
@@ -765,6 +796,10 @@ onActivated(() => {
                     color: rgba(48, 110, 111, 1);
                     text-align: center;
                     vertical-align: middle;
+                }
+
+                .statusMsg {
+                    white-space: nowrap;
                 }
 
                 .fpBox {
