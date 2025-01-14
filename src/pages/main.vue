@@ -124,7 +124,7 @@
                         <div class="unit">/篇</div>
                     </div>
                 </div>
-                <div class="rt2" v-show="payType == 2">
+                <div class="rt2 m50" v-show="payType == 2">
                     <div class="status">
                         支付成功！
                     </div>
